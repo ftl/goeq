@@ -27,7 +27,7 @@ func (q *Queue) Subscribe(consumer any) {
 	q.consumers = append(q.consumers, consumer)
 }
 
-// Publish runs the given function for all subscribed consumers. Use `Publish` in conjunction with `Message` function
+// Publish runs the given function for all subscribed consumers. Use `Publish` in conjunction with the `Event` function
 // to restrict execution to the relevant consumers (those that implement the relevant interface).
 func (q *Queue) Publish(notify func(item any)) {
 	for _, consumer := range q.consumers {
@@ -45,8 +45,8 @@ func (q *Queue) run(f func()) {
 	q.runner(f)
 }
 
-// Message is used to restrict the execution of the event method to those consumers that implement the relevant interface.
-func Message[T any](f func(T)) func(any) {
+// Event is used to restrict the execution of the event method to those consumers that implement the relevant interface.
+func Event[T any](f func(T)) func(any) {
 	return func(item any) {
 		t, ok := item.(T)
 		if !ok {
@@ -57,7 +57,7 @@ func Message[T any](f func(T)) func(any) {
 }
 
 type goRunner struct {
-	messages chan func()
+	events chan func()
 }
 
 // NewSyncRunner returns a runner that executes all event methods confined to the same goroutine.
@@ -74,12 +74,12 @@ func NewAsyncRunner() Runner {
 
 func newRunner(buffer int) Runner {
 	result := &goRunner{
-		messages: make(chan func(), buffer),
+		events: make(chan func(), buffer),
 	}
 
 	go func() {
-		for m := range result.messages {
-			m()
+		for e := range result.events {
+			e()
 		}
 	}()
 
@@ -87,5 +87,5 @@ func newRunner(buffer int) Runner {
 }
 
 func (r *goRunner) run(f func()) {
-	r.messages <- f
+	r.events <- f
 }

@@ -12,7 +12,7 @@ type FrequencyListener interface {
 To emit an event, the producer provides a callback function which will be called by the event queue with an instance of the particular interface:
 ```go
 func emitFrequencyChanged(frequency float64) {
-    queue.Publish(goeq.Message(func(listener FrequencyListener) {
+    queue.Publish(goeq.Event(func(listener FrequencyListener) {
         listener.FrequencyChanged(frequency)
     }))
 }

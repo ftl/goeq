@@ -15,7 +15,7 @@ type Transceiver struct {
 }
 
 func (t *Transceiver) emitFrequencyChanged(frequency float64) {
-	t.events.Publish(goeq.Message(func(listener FrequencyListener) {
+	t.events.Publish(goeq.Event(func(listener FrequencyListener) {
 		listener.FrequencyChanged(frequency)
 	}))
 }

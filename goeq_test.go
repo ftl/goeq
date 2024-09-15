@@ -46,17 +46,17 @@ func TestPublish(t *testing.T) {
 	q.Subscribe(ab)
 	q.Subscribe(abe)
 
-	q.Publish(Message(func(item IFA) {
+	q.Publish(Event(func(item IFA) {
 		item.A()
 	}))
 	assert.Equal(t, []string{"A", "a", "A"}, result)
 
-	q.Publish(Message(func(item IFB) {
+	q.Publish(Event(func(item IFB) {
 		item.B()
 	}))
 	assert.Equal(t, []string{"A", "a", "A", "B", "b", "B"}, result)
 
-	q.Publish(Message(func(item IFC) {
+	q.Publish(Event(func(item IFC) {
 		item.C()
 	}))
 	assert.Equal(t, []string{"A", "a", "A", "B", "b", "B"}, result)
@@ -85,7 +85,7 @@ func TestPublishConfined(t *testing.T) {
 	q.Subscribe(abe)
 
 	wg.Add(3)
-	q.Publish(Message(func(item IFA) {
+	q.Publish(Event(func(item IFA) {
 		item.A()
 		wg.Done()
 	}))
@@ -94,7 +94,7 @@ func TestPublishConfined(t *testing.T) {
 	assert.Equal(t, []string{"A", "a", "A"}, result)
 
 	wg.Add(3)
-	q.Publish(Message(func(item IFB) {
+	q.Publish(Event(func(item IFB) {
 		item.B()
 		wg.Done()
 	}))
